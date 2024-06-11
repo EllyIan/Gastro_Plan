@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to GastroPlan{% endblock%}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to GastroPlan!</h1>
+    <p class="lead">Your personalized meal planning companion. Plan your meals, manage your recipes, and generate smart shopping lists all in one place.</p>
+    <hr class="my-4">
+    <p>Get started by logging in or creating an account.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('auth_routes.login') }}" role="button">Login</a>
+    <a class="btn btn-secondary btn-lg" href="{{ url_for('auth_routes.register') }}" role="button">Register</a>
+</div>
+{% endblock %}

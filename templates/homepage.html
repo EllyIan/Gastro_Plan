@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Homepage - GastroPlan{% endblock %}
+
+{% block content %}
+  <h2>Welcome, {{ current_user.username }}</h2>
+  <a href="{{ url_for('auth_routes.logout') }}" class="btn btn-danger">Logout</a>
+  <a href="{{ url_for('recipe_routes.manage_recipes') }}" class="btn btn-primary">Create Recipe</a>
+  <h3>Your Recipes</h3>
+  <div id="recipes">
+    <!-- Recipes will be loaded here -->
+  </div>
+  <script>
+    // JavaScript to fetch and display recipes
+    fetch('/recipes')
+      .then(response => response.text())
+      .then(data => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data, 'text/html');
+        const recipesList = doc.querySelectorAll('li a');
+        const recipesDiv = document.getElementById('recipes');
+        recipesList.forEach(recipe => {
+          const recipeDiv = document.createElement('div');
+          recipeDiv.innerHTML = `<a href="${recipe.href}">${recipe.innerText}</a>`;
+          recipesDiv.appendChild(recipeDiv);
+        });
+      });
+  </script>
+{% endblock %}

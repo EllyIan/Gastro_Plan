@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Recipe Manager{% endblock %}
+
+{% block content %}
+  <div id="recipe-manager">
+    <!-- Create Recipe Section -->
+    <div id="create-recipe-section">
+      <h2>Create Recipe</h2>
+      <form id="NewRecipeForm" method="POST" action="{{ url_for('recipe_routes.manage_recipes') }}">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.title.label }} {{ form.title(class="form-control") }}
+          </div>
+          <div>
+            {{ form.time.label}} {{ form.time(class="form-control") }}
+          </div>
+          <div>
+            {{ form.ingredients.label }} {{ form.ingredients(class="form-control") }}
+          </div>
+          <div>
+            {{ form.instructions.label }} {{ form.instructions(class="form-control") }}
+          </div>
+          <div>
+            {{ form.date_posted.label }} {{ form.date_posted(class="form-control") }}
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary">Create Recipe</button>
+          </div>
+      </form>
+    </div>
+
+    <!-- Search Recipe Section -->
+    <div id="search-recipe-section">
+      <h2>Search for Recipes</h2>
+      <form id="search-recipe-form" action="{{ url_for('recipe_routes.search_recipes') }}" method="GET">
+        <div class="form-group">
+          <label for="query">Query</label>
+          <input type="text" id="query" name="query" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="ingredients">Ingredients (comma separated)</label>
+          <input type="text" id="ingredients" name="ingredients" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="cuisine">Cuisine</label>
+          <input type="text" id="cuisine" name="cuisine" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="diet">Diet</label>
+          <input type="text" id="diet" name="diet" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+      <div id="search-results"></div>
+    </div>
+
+    <!-- Combined Recipes Section -->
+    <div id="combined-recipes-section">
+      {% if combined_recipes %}
+        <h2>Combined Recipes</h2>
+        <ul>
+          {% for recipe in combined_recipes %}
+          <li><a href="{{ url_for('recipe_routes.recipe_details', recipe_id=recipe.id, source=recipe.source) }}">{{ recipe.title }}</a></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p></p>
+      {% endif %}
+    </div>
+
+    <!-- Recipe Details Section -->
+    {% if recipe %}
+    <div id="recipe-details-section">
+      <h2>Recipe Details</h2>
+      <h3>{{ recipe.title }}</h3>
+      <p>Time: {{ recipe.readyInMinutes if recipe.source == 'api' else recipe.time }} minutes</p>
+      <h3>Ingredients</h3>
+      <ul>
+        {% if recipe.source == 'api' %}
+          {% for ingredient in recipe.extendedIngredients %}
+          <li>{{ ingredient.original }}</li>
+          {% endfor %}
+        {% else %}
+          {% for ingredient in recipe.ingredients.split('\n') %}
+          <li>{{ ingredient }}</li>
+          {% endfor %}
+        {% endif %}
+      </ul>
+      <h3>Instructions</h3>
+      <p>{{ recipe.instructions }}</p>
+    </div>
+    {% endif %}
+  </div>
+{% endblock %}
