@@ -17,7 +17,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class NewRecipeForm(FlaskForm):
-    title = StringField('title', validators=[DataRequired()])
+    title = StringField('Title', validators=[DataRequired()])
     time = TextAreaField('Time', validators=[DataRequired()])
     ingredients = StringField('Ingridients', validators=[DataRequired()])
     instructions = TextAreaField('Instructions', validators=[DataRequired()])

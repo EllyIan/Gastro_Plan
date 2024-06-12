@@ -6,6 +6,7 @@
   <h2>Welcome, {{ current_user.username }}</h2>
   <a href="{{ url_for('auth_routes.logout') }}" class="btn btn-danger">Logout</a>
   <a href="{{ url_for('recipe_routes.manage_recipes') }}" class="btn btn-primary">Create Recipe</a>
+  <a href="{{ url_for('recipe_routes.search_recipes') }}" class="btn btn-primary">Search Recipes</a>
   <h3>Your Recipes</h3>
   <div id="recipes">
     <!-- Recipes will be loaded here -->

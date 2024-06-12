@@ -83,7 +83,7 @@ def manage_recipes():
         flash('Recipe created successfully!', 'success')
         return redirect(url_for('recipe_routes.manage_recipes'))  # Redirect to the recipe list page
     recipes = Recipe.query.all()
-    return render_template('recipe_manager.html', form=form, recipes=recipes)
+    return render_template('create_recipe.html', form=form, recipes=recipes)
 
 @recipe_routes.route('/recipe/search', methods=['GET', 'POST'])
 @login_required
@@ -115,7 +115,7 @@ def search_recipes():
     # Create a new instance of the NewRecipeForm
     form = NewRecipeForm()
 
-    return render_template('recipe_manager.html', query=query, combined_recipes=combined_recipes, form=form)
+    return render_template('search_results.html', query=query, combined_recipes=combined_recipes, form=form)
 
 @recipe_routes.route('/recipe/details/<string:recipe_id>/<string:source>', methods=['GET'])
 @login_required
@@ -140,4 +140,4 @@ def recipe_details(recipe_id, source):
     # Create a new instance of the NewRecipeForm
     form = NewRecipeForm()
 
-    return render_template('recipe_manager.html', recipe=recipe, form=form)
+    return render_template('search_results.html', recipe=recipe, form=form)
