@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from extensions import db, bcrypt, or_
-from models import User, Recipe
-from forms import RegistrationForm, LoginForm, NewRecipeForm
+from models import User, Recipe, MealPlan
+from forms import RegistrationForm, LoginForm, NewRecipeForm, MealPlanForm
 from sqlalchemy.exc import IntegrityError
 from spoonacular_api import requests, get_api_recipes
 
@@ -32,7 +32,10 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter(
+            (User.username == form.username_or_email.data) |
+            (User.email == form.username_or_email.data)
+        ).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -58,11 +61,58 @@ main_routes = Blueprint('main_routes', __name__)
 def landing_page():
     return render_template('landing.html')
 
-@main_routes.route('home')
+@main_routes.route('home', methods=['GET', 'POST'])
+@login_required
 def homepage():
-    return render_template('homepage.html')
+    form = MealPlanForm()
+    if form.validate_on_submit():
+        # Process form data and save to database
+        days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        for day in days_of_week:
+            date = form.date.data
+            
+            # Get the meal titles for each day
+            breakfast_title = getattr(form, f"{day}_breakfast").data
+            lunch_title = getattr(form, f"{day}_lunch").data
+            dinner_title = getattr(form, f"{day}_dinner").data
+            
+            # Query or create the Recipe instances
+            breakfast = Recipe.query.filter_by(title=breakfast_title).first()
+            if not breakfast and breakfast_title:
+                breakfast = Recipe(title=breakfast_title, user_id=current_user.id)
+                db.session.add(breakfast)
+            
+            lunch = Recipe.query.filter_by(title=lunch_title).first()
+            if not lunch and lunch_title:
+                lunch = Recipe(title=lunch_title, user_id=current_user.id)
+                db.session.add(lunch)
+                
+            dinner = Recipe.query.filter_by(title=dinner_title).first()
+            if not dinner and dinner_title:
+                dinner = Recipe(title=dinner_title, user_id=current_user.id)
+                db.session.add(dinner)
 
+            # Create the meal plan
+            meal_plan = MealPlan(
+                date=date,
+                breakfast=breakfast,
+                lunch=lunch,
+                dinner=dinner,
+                user_id=current_user.id
+            )
+            db.session.add(meal_plan)
+        
+        db.session.commit()
+        flash('Meal Plan created!', 'success')
+        return redirect(url_for('main_routes.homepage'))
+    else:
+        flash('Failed to create meal plan. Check the form for errors.', 'danger')
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error in {getattr(form, field).label.text}: {error}", 'danger')
 
+    meal_plans = MealPlan.query.filter_by(user_id=current_user.id).all()
+    return render_template('homepage.html', form=form, meal_plans=meal_plans)
 recipe_routes = Blueprint('recipe_routes', __name__)
 
 @recipe_routes.route('/recipes', methods=['GET', 'POST'])

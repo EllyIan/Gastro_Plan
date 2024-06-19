@@ -7,24 +7,87 @@
   <a href="{{ url_for('auth_routes.logout') }}" class="btn btn-danger">Logout</a>
   <a href="{{ url_for('recipe_routes.manage_recipes') }}" class="btn btn-primary">Create Recipe</a>
   <a href="{{ url_for('recipe_routes.search_recipes') }}" class="btn btn-primary">Search Recipes</a>
-  <h3>Your Recipes</h3>
-  <div id="recipes">
-    <!-- Recipes will be loaded here -->
+
+
+  <!-- Button to toggle meal plan creation form -->
+  <button id="toggleFormBtn" class="btn btn-secondary">Toggle Meal Plan Creation</button>
+  
+  <h1>Meal Planner</h1>
+  
+    <!-- Meal Plan Creation Form -->
+  <form method="POST" action="{{ url_for('main_routes.homepage') }}">
+    {{ form.hidden_tag() }}
+
+    {% for day in days %}
+      <div class="day">
+        <h3>{{ day.capitalize() }}</h3>
+        
+        <div class="form-group">
+          {{ getattr(form, day + '_datetime').label }}<br>
+          {{ getattr(form, day + '_datetime')(class="form-control") }}
+        </div>
+        <div class="form-group">
+          {{ getattr(form, day + '_breakfast').label }}<br>
+          {{ getattr(form, day + '_breakfast')(class="form-control") }}
+        </div>
+        <div class="form-group">
+          {{ getattr(form, day + '_lunch').label }}<br>
+          {{ getattr(form, day + '_lunch')(class="form-control") }}
+        </div>
+        <div class="form-group">
+          {{ getattr(form, day + '_dinner').label }}<br>
+          {{ getattr(form, day + '_dinner')(class="form-control") }}
+        </div>
+      </div>
+    {% endfor %}
+    
+    <div class="form-group">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+
+  <!-- Display Existing Meal Plans -->
+  <div class="timetable">
+    {% for meal_plan in meal_plans %}
+    <div class="day">
+        <h3>{{ meal_plan.date.strftime('%A, %B %d, %Y') }}</h3>
+        <div class="meal">
+            <h4>Breakfast</h4>
+            {% if meal_plan.breakfast %}
+            <p><a href="{{ url_for('recipe_routes.recipe_detail', recipe_id=meal_plan.breakfast.id) }}">{{ meal_plan.breakfast.title }}</a></p>
+            {% else %}
+            <p>No recipe assigned</p>
+            {% endif %}
+        </div>
+        <div class="meal">
+            <h4>Lunch</h4>
+            {% if meal_plan.lunch %}
+            <p><a href="{{ url_for('recipe_routes.recipe_detail', recipe_id=meal_plan.lunch.id) }}">{{ meal_plan.lunch.title }}</a></p>
+            {% else %}
+            <p>No recipe assigned</p>
+            {% endif %}
+        </div>
+        <div class="meal">
+            <h4>Dinner</h4>
+            {% if meal_plan.dinner %}
+            <p><a href="{{ url_for('recipe_routes.recipe_detail', recipe_id=meal_plan.dinner.id) }}">{{ meal_plan.dinner.title }}</a></p>
+            {% else %}
+            <p>No recipe assigned</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
   </div>
+
+  <!-- JavaScript to toggle meal plan creation form -->
   <script>
-    // JavaScript to fetch and display recipes
-    fetch('/recipes')
-      .then(response => response.text())
-      .then(data => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data, 'text/html');
-        const recipesList = doc.querySelectorAll('li a');
-        const recipesDiv = document.getElementById('recipes');
-        recipesList.forEach(recipe => {
-          const recipeDiv = document.createElement('div');
-          recipeDiv.innerHTML = `<a href="${recipe.href}">${recipe.innerText}</a>`;
-          recipesDiv.appendChild(recipeDiv);
-        });
-      });
+    document.getElementById('toggleFormBtn').addEventListener('click', function() {
+      const formDiv = document.getElementById('mealPlanForm');
+      if (formDiv.style.display === 'none') {
+        formDiv.style.display = 'block';
+      } else {
+        formDiv.style.display = 'none';
+      }
+    });
   </script>
 {% endblock %}

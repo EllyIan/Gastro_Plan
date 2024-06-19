@@ -7,7 +7,7 @@ from models import User
 app = Flask(__name__)
 
 # Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gastro2.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gastro3.0.db'
 app.config['SECRET_KEY'] = 'my_secret_key'
 
 # Initialize extensions

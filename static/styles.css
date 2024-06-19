@@ -5,11 +5,17 @@ body {
 }
 
 .navbar {
-    background-color: #007bff; /* Blue navbar */
+    background-color: #f7f8f9; /* Blue navbar */
+}
+
+.navbar-nav .nav-item {
+    margin-right: 20px; /* Add spacing between nav items */
 }
 
 .navbar-brand, .nav-link {
-    color: #fff !important;
+    color: #3006e9 !important;
+    font-weight: bold;
+    font-size: 1.1em;
 }
 
 .btn-primary {
@@ -67,4 +73,26 @@ h3 {
 .flashes .warning {
     background-color: #fff3cd;
     color: #856404;
+}
+
+.timetable .day{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+
+.timetable .meal {
+    margin-bottom: 10px;
+}
+
+h3, h4 {
+    margin: 0 0 10px;
 }
