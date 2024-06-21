@@ -36,6 +36,7 @@ class NewRecipeForm(FlaskForm):
     ingredients = StringField('Ingridients', validators=[DataRequired()])
     instructions = TextAreaField('Instructions', validators=[DataRequired()])
     date_posted = TextAreaField('Date_Posted', validators=[DataRequired()])
+    time = TextAreaField('Time', validators=[DataRequired()])
     submit = SubmitField('Create Recipe')
     
 '''class MealPlanForm(FlaskForm):
